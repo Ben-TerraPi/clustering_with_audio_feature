@@ -11,13 +11,13 @@ load_dotenv()
 SPOTIPY_CLIENT_ID = os.getenv("CLIENT_ID")
 SPOTIPY_CLIENT_SECRET = os.getenv("CLIENT_SECRET")
 SPOTIPY_REDIRECT_URI = "http://localhost:8080/callback"
-SCOPE = 'playlist-modify-public'
 
 # Authentification
-sp = spotipy.Spotify(auth_manager=SpotifyOAuth(SPOTIPY_CLIENT_ID,
-                                               SPOTIPY_CLIENT_SECRET,
-                                               SPOTIPY_REDIRECT_URI,
-                                               SCOPE))
+
+sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id = SPOTIPY_CLIENT_ID,
+                                               client_secret = SPOTIPY_CLIENT_SECRET,
+                                               redirect_uri = SPOTIPY_REDIRECT_URI,
+                                               scope='playlist-modify-public'))
 
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> FONCTION POUR EXPORT PLAYLIST
@@ -47,15 +47,15 @@ def create_spotify_playlist(csv_file_path, sp, playlist_name, cluster=None):
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> FICHIER avec spotify ID
 
-#create_spotify_playlist("spotify/my_tracks_spotify_ids.csv", sp, 'Ma nouvelle playlist')
+create_spotify_playlist("spotify/my_tracks_with_spotify_id.csv", sp, 'Ma nouvelle playlist')
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> export playlist ML_Cluster
 
-create_spotify_playlist("ML/spotify_ML_clusters.csv", sp, "Calmes", cluster = 0)
-create_spotify_playlist("ML/spotify_ML_clusters.csv", sp, "Doux et Acoustiques", cluster = 1)
-create_spotify_playlist("ML/spotify_ML_clusters.csv", sp, "Équilibrés", cluster = 2)
-create_spotify_playlist("ML/spotify_ML_clusters.csv", sp, "Positifs", cluster = 3)
-create_spotify_playlist("ML/spotify_ML_clusters.csv", sp, "Instrumentaux", cluster = 4)
-create_spotify_playlist("ML/spotify_ML_clusters.csv", sp, "Instrumentaux et Acoustiques", cluster = 5)
-create_spotify_playlist("ML/spotify_ML_clusters.csv", sp, "Acoustiques", cluster = 6)
-create_spotify_playlist("ML/spotify_ML_clusters.csv", sp, "Instrumentaux et Énergiques", cluster = 7)
+# create_spotify_playlist("ML/spotify_ML_clusters.csv", sp, "Calmes", cluster = 0)
+# create_spotify_playlist("ML/spotify_ML_clusters.csv", sp, "Doux et Acoustiques", cluster = 1)
+# create_spotify_playlist("ML/spotify_ML_clusters.csv", sp, "Équilibrés", cluster = 2)
+# create_spotify_playlist("ML/spotify_ML_clusters.csv", sp, "Positifs", cluster = 3)
+# create_spotify_playlist("ML/spotify_ML_clusters.csv", sp, "Instrumentaux", cluster = 4)
+# create_spotify_playlist("ML/spotify_ML_clusters.csv", sp, "Instrumentaux et Acoustiques", cluster = 5)
+# create_spotify_playlist("ML/spotify_ML_clusters.csv", sp, "Acoustiques", cluster = 6)
+# create_spotify_playlist("ML/spotify_ML_clusters.csv", sp, "Instrumentaux et Énergiques", cluster = 7)
