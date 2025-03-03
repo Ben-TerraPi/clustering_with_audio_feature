@@ -4,7 +4,7 @@ import pandas_gbq
 
 my_tracks_spotify_id = pd.read_csv("spotify/my_tracks_spotify_ids.csv")
 
-my_tracks_with_spotify_id  = my_tracks_spotify_id[my_tracks_spotify_id['spotify_id'].notnull()]
+my_tracks_with_spotify_id  = pd.read_csv("spotify/my_tracks_with_spotify_id.csv")
 
 my_tracks_without_spotify_id = my_tracks_spotify_id[my_tracks_spotify_id['spotify_id'].isnull()]
 
