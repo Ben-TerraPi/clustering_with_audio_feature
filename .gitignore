@@ -1,1 +1,2 @@
 .env
+.venv/Lib/site-packages/pydata_google_auth/auth.py
