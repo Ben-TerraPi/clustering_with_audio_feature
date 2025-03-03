@@ -11,9 +11,9 @@ from sklearn.metrics import silhouette_score
 from yellowbrick.cluster.elbow import kelbow_visualizer
 
 
-spotify_df = pd.read_csv("ML/spotify_df.csv")
+tracks_features = pd.read_csv("ML/tracks_features.csv")
 
-spotify_num = spotify_df.select_dtypes(include=['int64', 'float64'])
+spotify_num = tracks_features.select_dtypes(include=['int64', 'float64'])
 
 
 # heatmap to visualize correlations
@@ -112,17 +112,17 @@ np.unique(labelling,return_counts=True)
 
 
 # rajout de la colonne cluster
-spotify_df['Cluster'] = pd.Series(labelling)
+tracks_features['Cluster'] = pd.Series(labelling)
 
 
-spotify_df.to_csv("ML/spotify_ML_clusters.csv", index= False)
+tracks_features.to_csv("ML/spotify_ML_clusters.csv", index= False)
 
 """### export to BigQuery"""
 
 project_id = "discogs-random-selecta"
 table_id = "discogs-random-selecta.ML.spotify_ML_clusters"
 
-pandas_gbq.to_gbq(spotify_df, table_id , project_id)
+pandas_gbq.to_gbq(tracks_features, table_id , project_id)
 
 """## Generating Spotify playlists based on our clusters!"""
 
@@ -130,7 +130,7 @@ daily_mixes = {}
 
 for num_cluster in np.unique(labelling):
 
-  daily_mixes[num_cluster] = spotify_df[spotify_df['Cluster'] == num_cluster]
+  daily_mixes[num_cluster] = tracks_features[tracks_features['Cluster'] == num_cluster]
 
 """Run the cell below to print out our 8 playlists!!!"""
 

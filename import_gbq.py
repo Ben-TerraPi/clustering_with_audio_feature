@@ -12,12 +12,12 @@ query1 = """
 
 query2 = """
     SELECT *
-    FROM `discogs-random-selecta.my_data.final_v2`
+    FROM `discogs-random-selecta.my_data.tracks_features`
 """
 
 client.query(query1).to_dataframe().to_csv('my_tracks.csv', index = False)
 
-client.query(query2).to_dataframe().to_csv("ML/spotify_df.csv", index = False)
+client.query(query2).to_dataframe().to_csv("ML/tracks_features.csv", index = False)
 
 print("datasets importés")
 
