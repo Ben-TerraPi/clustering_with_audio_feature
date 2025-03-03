@@ -1,6 +1,7 @@
+import os
 from google.cloud import bigquery
 
-#$env:GOOGLE_APPLICATION_CREDENTIALS = "C:\Users\benoi\code\Ben-TerraPi\GCP\discogs-random-selecta-c158979d33c1.json"
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "credentials/discogs-random-selecta-c158979d33c1.json"
 
 client = bigquery.Client()
 
