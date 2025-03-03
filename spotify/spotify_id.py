@@ -12,15 +12,14 @@ SPOTIPY_CLIENT_ID = os.getenv("CLIENT_ID")
 SPOTIPY_CLIENT_SECRET = os.getenv("CLIENT_SECRET")
 SPOTIPY_REDIRECT_URI = "http://localhost:8080/callback"
 
-# Authentification via client_credentials
+# Authentification
 client_credentials_manager = SpotifyClientCredentials(client_id = SPOTIPY_CLIENT_ID, client_secret = SPOTIPY_CLIENT_SECRET)
 sp = spotipy.Spotify(client_credentials_manager = client_credentials_manager)
 
-
-# 🔄 Test de l'authentification
+# Test authentification
 try:
     token = sp.auth_manager.get_access_token(as_dict=False)
-    print(f"✅ Authentification réussie ! Token : {token[:20]}...")  # Afficher les 20 premiers caractères du token
+    print(f"✅ Authentification réussie !")
 except Exception as e:
     print(f"❌ Erreur d'authentification : {e}")
 
@@ -56,4 +55,4 @@ def add_spotify_ids_to_csv(input_file_path, output_file_path):
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 
-# add_spotify_ids_to_csv('my_tracks.csv', 'spotify/my_tracks_spotify_ids.csv')
+add_spotify_ids_to_csv('my_tracks.csv', 'spotify/my_tracks_spotify_ids.csv')
