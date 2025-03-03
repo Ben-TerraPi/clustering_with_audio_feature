@@ -53,7 +53,7 @@ Un nouveau fichier [my_tracks_spotify_ids.csv](https://github.com/Ben-TerraPi/cl
 Je suis resté bloqué sur cette étape avant de comprendre que Spotify avait fait le choix de bloqué l'attribut .audio_features depuis le mois de Novembre 2024 ne permettant plus de récupérer les données correspondantes.
 N.B. Je garde mon code dans le cas d'un retour de la fonctionnalité.
 
-## Alternative pour récupération des features audio avec le site [Exportify]([https://www.chosic.com/spotify-playlist-sorter/](https://exportify.net/))
+## Alternative pour récupération des features audio avec le site [Exportify](https://exportify.net/)
 
 Malgré la fermeture de l'accès par Spotify à certaine fonctionnalité de l'API il existe encore des sites qui fournissent les données souhaités. Pour cela il est nécessaire de créer une playlist Spotify afin de pouvoir l'exporté vers le site en question.
 
