@@ -3,7 +3,7 @@
 Continuité du projet [Discogs-Random-Selecta](https://github.com/Ben-TerraPi/Discogs-Random-Selecta)
 
 
-Avec le projet ci-dessus j'ai récupéré, grâce à des requêtes API, un fichier regroupant l'intégralité des morceaux de chaque album que je possède et que j'ai répertorié sur [Discogs](https://www.discogs.com/) (une des plus grandes bases de données musicale en ligne).
+Avec le projet ci-dessus, j'ai récupéré, grâce à des requêtes API, un fichier regroupant l'intégralité des morceaux de chaque album que je possède et que j'ai répertorié sur [Discogs](https://www.discogs.com/) (l'une des plus grandes bases de données musicales en ligne).
 
 Le tableau :
 | album_id  | artist | album | track_id | title |
@@ -11,15 +11,15 @@ Le tableau :
 
 Le fichier : [my_tracks.csv](https://github.com/Ben-TerraPi/clustering_with_audio_feature/blob/main/my_tracks.csv) avec 5348 tracks.
 
-Maintenant le but est de regrouper l'ensemble de ces morceaux en utilisant leurs features audio. Pour cela je vais directement récupérer celles déjà existante et créé par Spotify en utilisant son API avec [Spotipy](https://spotipy.readthedocs.io/en/2.25.1/). Peut-être qu'ulterieurement j'analyserai moi-même mes fichiers audio avec les librairies python [Librosa](https://librosa.org/doc/latest/index.html#) et [Essentia](https://essentia.upf.edu/index.html#).
+Maintenant, le but est de regrouper l'ensemble de ces morceaux en utilisant leurs caractéristiques audio. Pour cela, je vais directement récupérer celles déjà existantes et créées par Spotify en utilisant son API avec [Spotipy](https://spotipy.readthedocs.io/en/2.25.1/). Peut-être qu'ultérieurement, j'analyserai moi-même mes fichiers audio avec les bibliothèques Python [Librosa](https://librosa.org/doc/latest/index.html#) et [Essentia](https://essentia.upf.edu/index.html#).
 
 # Dossier [Spotify](https://github.com/Ben-TerraPi/clustering_with_audio_feature/tree/main/spotify)
 
 ## [spotify_id](https://github.com/Ben-TerraPi/clustering_with_audio_feature/blob/main/spotify/spotify_id.py)
 
-Après activation de mes credentials développeur Spotify pour l'authentification via l'API il est nécessaire dans un premier temps de requêter la base de donnée pour recouper mon tableau avec les titres disponibles afin de récuperer les ID de chaque titres en utilisant le nom de l'artiste, le tire et l'album du morceau.
+Après l'activation de mes identifiants développeur Spotify pour l'authentification via l'API, il est nécessaire dans un premier temps de requêter la base de données pour recouper mon tableau avec les titres disponibles afin de récupérer les ID de chaque titre en utilisant le nom de l'artiste, le titre et l'album du morceau.
 
-A la suite de mes tests je réalise qu'il faut rechercher des correspondances en plusieurs étapes pour s'assurer de la qualité des données.
+À la suite de mes tests, je réalise qu'il faut rechercher des correspondances en plusieurs étapes pour s'assurer de la qualité des données.
 
 ### 1èr étape recherche de correspondance exacte titre-artiste
 
@@ -63,12 +63,12 @@ Un nouveau fichier [my_tracks_spotify_ids.csv](https://github.com/Ben-TerraPi/cl
 
 ## [audio_features.py](https://github.com/Ben-TerraPi/clustering_with_audio_feature/blob/main/spotify/audio_features.py)
 
-Je suis resté bloqué sur cette étape avant de comprendre que Spotify avait fait le choix de bloqué l'attribut .audio_features depuis le mois de Novembre 2024 ne permettant plus de récupérer les données correspondantes.
-N.B. Je garde mon code dans le cas d'un retour de la fonctionnalité.
+Je suis resté bloqué sur cette étape avant de comprendre que Spotify avait fait le choix de bloquer l'attribut .audio_features depuis le mois de novembre 2024, ne permettant plus de récupérer les données correspondantes. 
+N.B. : Je garde mon code dans le cas d'un retour de la fonctionnalité.
 
 ## Alternative pour récupération des features audio avec le site [Exportify](https://exportify.net/)
 
-Malgré la fermeture de l'accès par Spotify à certaine fonctionnalité de l'API il existe encore des sites qui fournissent les données souhaités. Pour cela il est nécessaire de créer une playlist Spotify afin de pouvoir l'exporté vers le site en question.
+Malgré la fermeture de l'accès par Spotify à certaines fonctionnalités de l'API, il existe encore des sites qui fournissent les données souhaitées. Pour cela, il est nécessaire de créer une playlist Spotify afin de pouvoir l'exporter vers le site en question.
 
 ### [export_playlist.py](https://github.com/Ben-TerraPi/clustering_with_audio_feature/blob/main/spotify/export_playlist.py)
 
