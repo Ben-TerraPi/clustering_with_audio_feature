@@ -29,10 +29,12 @@ Après l'activation de mes identifiants développeur Spotify pour l'authentifica
 - étape 5: fuzzy match titre-album
 - étape 6: fuzzy match artiste-titre
 
-7 fonctions regroupées dans une:
+8 fonctions regroupées dans une:
 
 ```
 def get_track_id(artist, track, album):
+    artist = clean_title(artist)
+    track = clean_title(track)
     album = clean_album_name(album)
     track_id = get_track_id_by_artist(artist, track)
     if track_id:
