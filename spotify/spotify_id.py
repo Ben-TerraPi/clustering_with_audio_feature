@@ -50,7 +50,7 @@ def clean_album_name(album):
 
 # recherche Spotify
 
-def search_spotify(query, search_type='track', limit=5):
+def search_spotify(query, search_type='track', limit=10):
     try:
         result = sp.search(q=query, type=search_type, limit=limit)
         time.sleep(1)  # rate limit
@@ -259,7 +259,7 @@ def clean(title):
 def get_title_artist_id(artist, track):
     track = clean(track)
     try:
-        result = sp.search(q=f'artist:{artist} track:{track}', type='track', limit=1)
+        result = sp.search(q=f'artist:{artist} track:{track}', type='track', limit=10)
         time.sleep(1)  # rate limit
 
         if result['tracks']['items']:
