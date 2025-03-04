@@ -249,15 +249,30 @@ def get_track_id_fuzzy_artist_track(artist, track):
     except Exception as e:
         print(f"Erreur pour {artist} - {track}: {e}")
         return None
+    
+# étape 7 : code de départ (au cas où...)
+
+def get_title_artist_id(artist, track):
+    try:
+        result = sp.search(q=f'artist:{artist} track:{track}', type='track', limit=1)
+        time.sleep(1)  # rate limit
+
+        if result['tracks']['items']:
+            return result['tracks']['items'][0]['id']
+        else:
+            print(f"No match found for '{artist} - {track}'")
+    except Exception as e:
+        print(f"Erreur pour {artist} - {track}: {e}")
+        return None
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><
 
 # obtenir l'ID spotify
 
 def get_track_id(artist, track, album):
-    album = clean_album_name(album)
-    track = clean_title(track)
-    artist = clean_title(artist)
+    # album = clean_album_name(album)
+    # track = clean_title(track)
+    # artist = clean_title(artist)
 
     track_id = get_track_id_by_artist(artist, track)
     if track_id:
@@ -268,13 +283,16 @@ def get_track_id(artist, track, album):
     track_id = get_track_id_by_artist_album(artist, track, album)
     if track_id:
         return track_id
-    track_id = get_track_id_fuzzy_artist_track(artist, track)
+    track_id = get_track_id_fuzzy(artist, track, album)
     if track_id:
         return track_id
     track_id = get_track_id_fuzzy_track_album(track, album)
     if track_id:
         return track_id
-    return get_track_id_fuzzy(artist, track, album)
+    track_id = get_track_id_fuzzy_artist_track(artist, track)
+    if track_id:
+        return track_id
+    return get_title_artist_id(artist, track)
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
@@ -292,23 +310,6 @@ def add_id_to_csv(input_file_path, output_file_path, limit=None):
     df.to_csv(output_file_path, index=False)
     print(f"Les IDs Spotify ont été ajoutés et sauvegardés dans {output_file_path}")
 
-
-#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-# code de départ
-
-# def get_title_artist_id(artist, track):
-#     try:
-#         result = sp.search(q=f'artist:{artist} track:{track}', type='track', limit=1)
-#         time.sleep(1)  # rate limit
-
-#         if result['tracks']['items']:
-#             return result['tracks']['items'][0]['id']
-#         else:
-#             return None
-#     except Exception as e:
-#         print(f"Erreur pour {artist} - {track}: {e}")
-#         return None
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
