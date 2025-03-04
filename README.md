@@ -9,59 +9,74 @@ Le tableau :
 | album_id  | artist | album | track_id | title |
 |-----------|--------|-------|----------|-------|
 
-Le fichier : [my_tracks.csv](https://github.com/Ben-TerraPi/clustering_with_audio_feature/blob/main/my_tracks.csv) avec 5348 tracks.
+Le fichier : [my_tracks.csv](https://github.com/Ben-TerraPi/Discogs-Random-Selecta/blob/main/my_tracks.csv) avec 5348 tracks.
 
-Maintenant, le but est de regrouper l'ensemble de ces morceaux en utilisant leurs caractéristiques audio. Pour cela, je vais directement récupérer celles déjà existantes et créées par Spotify en utilisant son API avec [Spotipy](https://spotipy.readthedocs.io/en/2.25.1/). Peut-être qu'ultérieurement, j'analyserai moi-même mes fichiers audio avec les bibliothèques Python [Librosa](https://librosa.org/doc/latest/index.html#) et [Essentia](https://essentia.upf.edu/index.html#).
+Maintenant, le but est de regrouper l'ensemble de ces morceaux en utilisant leurs caractéristiques audio. Pour cela, je vais directement récupérer celles déjà existantes et créées par Spotify en utilisant son API avec [Spotipy](https://spotipy.readthedocs.io/en/2.25.1/). Peut-être qu'ultérieurement, j'analyserai moi-même mes fichiers audio dans un autre projet avec les bibliothèques Python [Librosa](https://librosa.org/doc/latest/index.html#) et [Essentia](https://essentia.upf.edu/index.html#).
 
 # Dossier [Spotify](https://github.com/Ben-TerraPi/clustering_with_audio_feature/tree/main/spotify)
 
-## [spotify_id](https://github.com/Ben-TerraPi/clustering_with_audio_feature/blob/main/spotify/spotify_id.py)
+## Fichier [spotify_id.py](https://github.com/Ben-TerraPi/clustering_with_audio_feature/blob/main/spotify/spotify_id.py)
 
 Après l'activation de mes identifiants développeur Spotify pour l'authentification via l'API, il est nécessaire dans un premier temps de requêter la base de données pour recouper mon tableau avec les titres disponibles afin de récupérer les ID de chaque titre en utilisant le nom de l'artiste, le titre et l'album du morceau.
 
 À la suite de mes tests, je réalise qu'il faut rechercher des correspondances en plusieurs étapes pour s'assurer de la qualité des données.
 
-### 1èr étape recherche de correspondance exacte titre-artiste
+- nettoyage
+- étape 1: correspondance exacte artist-titre
+- étape 2: correspondance exacte titre-album
+- étape 3: Correspondance exacte artiste-titre-album
+- étape 4: fuzzy match artiste-titre-album
+- étape 5: fuzzy match titre-album
+- étape 6: fuzzy match artiste-titre
+
+7 fonctions regroupées dans une:
 
 ```
-def get_track_id(artist, track):
-    try:
-        # Recherche avec l'artiste et le titre
-        result = sp.search(q=f'artist:{artist} track:{track}', type='track', limit=5)
-        time.sleep(1)  # rate limit
+def get_track_id(artist, track, album):
+    album = clean_album_name(album)
+    track_id = get_track_id_by_artist(artist, track)
+    if track_id:
+        return track_id
+    track_id = get_track_id_by_album(track, album)
+    if track_id:
+        return track_id
+    track_id = get_track_id_by_artist_album(artist, track, album)
+    if track_id:
+        return track_id
+    track_id = get_track_id_fuzzy(artist, track, album)
+    if track_id:
+        return track_id
+    track_id = get_track_id_fuzzy_track_album(track, album)
+    if track_id:
+        return track_id
+    return get_track_id_fuzzy_artist_track(artist, track)
+```
 
-        # Correspondance exacte titre-artiste
-        for track_info in result['tracks']['items']:
-            track_name = track_info['name']
-            track_artist = track_info['artists'][0]['name']
+Cette dernière est appelé pour la création d'un nouveau tableau:
 
-            if track_name.lower() == track.lower() and track_artist.lower() == artist.lower():
-                return track_info['id']
-
-        print(f"No exact match found for '{artist} - {track}'")
-        return None
-    except Exception as e:
-        print(f"Erreur pour {artist} - {track}: {e}")
-        return None
-
-def add_spotify_ids_to_csv(input_file_path, output_file_path):
+```
+def add_id_to_csv(input_file_path, output_file_path, limit=None):
     df = pd.read_csv(input_file_path)
     print("Récupération des spotify_id")
 
-    # Ajout colonne pour ID + barre de progression
-    tqdm.pandas()
-    df['spotify_id'] = df.progress_apply(lambda row: get_track_id(row['artist'], row['title']), axis=1)
+    # limite pour test
+    if limit:
+        df = df.head(limit)
 
-    # Sauvegarde nouveau csv
+    # ajout colonne ID + barre de progression
+    tqdm.pandas()
+    df['spotify_id'] = df.progress_apply(lambda row: get_track_id(row['artist'], row['title'], row['album']), axis=1)
+
+    # sauvegarde nouveau csv
     df.to_csv(output_file_path, index=False)
 
     print(f"Les IDs Spotify ont été ajoutés et sauvegardés dans {output_file_path}")
 ```
-Un nouveau fichier [my_tracks_spotify_ids.csv](https://github.com/Ben-TerraPi/clustering_with_audio_feature/blob/main/spotify/my_tracks_spotify_ids.csv) est créé. Sur les 5348 morceaux j'ai 4366 résultats. Les 982 titres manquants ne sont pas disponibles sur Spotify.
 
-### 2em étape recherche de correspondance exacte titre-album
+Un nouveau fichier [my_tracks_spotify_ids.csv](https://github.com/Ben-TerraPi/Discogs-Random-Selecta/blob/main/my_tracks.csv) est créé. Sur les 5348 morceaux j'ai 4366 résultats. Les 982 titres manquants ne sont pas disponibles sur Spotify.
 
-## [audio_features.py](https://github.com/Ben-TerraPi/clustering_with_audio_feature/blob/main/spotify/audio_features.py)
+
+## Fichier [audio_features.py](https://github.com/Ben-TerraPi/clustering_with_audio_feature/blob/main/spotify/audio_features.py)
 
 Je suis resté bloqué sur cette étape avant de comprendre que Spotify avait fait le choix de bloquer l'attribut .audio_features depuis le mois de novembre 2024, ne permettant plus de récupérer les données correspondantes. 
 N.B. : Je garde mon code dans le cas d'un retour de la fonctionnalité.
@@ -70,7 +85,7 @@ N.B. : Je garde mon code dans le cas d'un retour de la fonctionnalité.
 
 Malgré la fermeture de l'accès par Spotify à certaines fonctionnalités de l'API, il existe encore des sites qui fournissent les données souhaitées. Pour cela, il est nécessaire de créer une playlist Spotify afin de pouvoir l'exporter vers le site en question.
 
-### [export_playlist.py](https://github.com/Ben-TerraPi/clustering_with_audio_feature/blob/main/spotify/export_playlist.py)
+### Fichier [export_playlist.py](https://github.com/Ben-TerraPi/clustering_with_audio_feature/blob/main/spotify/export_playlist.py)
 
 Fonction pour l'exportation de mes morceaux vers spotify grâce à leur ID:
 
