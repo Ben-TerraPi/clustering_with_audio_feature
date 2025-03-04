@@ -28,14 +28,13 @@ Après l'activation de mes identifiants développeur Spotify pour l'authentifica
 - étape 4: fuzzy match artiste-titre-album
 - étape 5: fuzzy match titre-album
 - étape 6: fuzzy match artiste-titre
+- étape 7: code de départ moins précis (au cas où..)
 
-8 fonctions regroupées dans une:
+9 fonctions regroupées dans une:
 
 ```
 def get_track_id(artist, track, album):
-    artist = clean_title(artist)
-    track = clean_title(track)
-    album = clean_album_name(album)
+
     track_id = get_track_id_by_artist(artist, track)
     if track_id:
         return track_id
@@ -51,7 +50,10 @@ def get_track_id(artist, track, album):
     track_id = get_track_id_fuzzy_track_album(track, album)
     if track_id:
         return track_id
-    return get_track_id_fuzzy_artist_track(artist, track)
+    track_id = get_track_id_fuzzy_artist_track(artist, track)
+    if track_id:
+        return track_id
+    return get_title_artist_id(artist, track)
 ```
 
 Cette dernière est appelé pour la création d'un nouveau tableau:
@@ -61,17 +63,13 @@ def add_id_to_csv(input_file_path, output_file_path, limit=None):
     df = pd.read_csv(input_file_path)
     print("Récupération des spotify_id")
 
-    # limite pour test
     if limit:
         df = df.head(limit)
 
-    # ajout colonne ID + barre de progression
     tqdm.pandas()
     df['spotify_id'] = df.progress_apply(lambda row: get_track_id(row['artist'], row['title'], row['album']), axis=1)
 
-    # sauvegarde nouveau csv
     df.to_csv(output_file_path, index=False)
-
     print(f"Les IDs Spotify ont été ajoutés et sauvegardés dans {output_file_path}")
 ```
 
