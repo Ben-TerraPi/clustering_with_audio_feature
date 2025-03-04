@@ -17,18 +17,29 @@ Maintenant le but est de regrouper l'ensemble de ces morceaux en utilisant leurs
 
 ## [spotify_id](https://github.com/Ben-TerraPi/clustering_with_audio_feature/blob/main/spotify/spotify_id.py)
 
-Après activation de mes credentials développeur Spotify pour l'authentification via l'API il est nécessaire dans un premier temps de requêter la base de donnée pour recouper mon tableau avec les titres disponibles afin de récuperer les ID de chaque titres en utilisant le nom de l'artiste et le tire du morceau avec ces fonctions:
+Après activation de mes credentials développeur Spotify pour l'authentification via l'API il est nécessaire dans un premier temps de requêter la base de donnée pour recouper mon tableau avec les titres disponibles afin de récuperer les ID de chaque titres en utilisant le nom de l'artiste, le tire et l'album du morceau.
+
+A la suite de mes tests je réalise qu'il faut rechercher des correspondances en plusieurs étapes pour s'assurer de la qualité des données.
+
+### 1èr étape recherche de correspondance exacte titre-artiste
 
 ```
 def get_track_id(artist, track):
     try:
-        result = sp.search(q=f'artist:{artist} track:{track}', type='track', limit=1)
+        # Recherche avec l'artiste et le titre
+        result = sp.search(q=f'artist:{artist} track:{track}', type='track', limit=5)
         time.sleep(1)  # rate limit
 
-        if result['tracks']['items']:
-            return result['tracks']['items'][0]['id']
-        else:
-            return None
+        # Correspondance exacte titre-artiste
+        for track_info in result['tracks']['items']:
+            track_name = track_info['name']
+            track_artist = track_info['artists'][0]['name']
+
+            if track_name.lower() == track.lower() and track_artist.lower() == artist.lower():
+                return track_info['id']
+
+        print(f"No exact match found for '{artist} - {track}'")
+        return None
     except Exception as e:
         print(f"Erreur pour {artist} - {track}: {e}")
         return None
@@ -47,6 +58,8 @@ def add_spotify_ids_to_csv(input_file_path, output_file_path):
     print(f"Les IDs Spotify ont été ajoutés et sauvegardés dans {output_file_path}")
 ```
 Un nouveau fichier [my_tracks_spotify_ids.csv](https://github.com/Ben-TerraPi/clustering_with_audio_feature/blob/main/spotify/my_tracks_spotify_ids.csv) est créé. Sur les 5348 morceaux j'ai 4366 résultats. Les 982 titres manquants ne sont pas disponibles sur Spotify.
+
+### 2em étape recherche de correspondance exacte titre-album
 
 ## [audio_features.py](https://github.com/Ben-TerraPi/clustering_with_audio_feature/blob/main/spotify/audio_features.py)
 
