@@ -251,15 +251,28 @@ def get_track_id_fuzzy_artist_track(artist, track):
         return None
     
 # étape 7 : code de départ (au cas où...)
+def clean(title):
+    title = re.sub(r'\(.*\)', '', title).strip()  # Supprime le contenu entre parenthèses
+    title = unidecode(title)  # Convertit les caractères accentués
+    return title
 
 def get_title_artist_id(artist, track):
+    track = clean(track)
     try:
         result = sp.search(q=f'artist:{artist} track:{track}', type='track', limit=1)
         time.sleep(1)  # rate limit
 
         if result['tracks']['items']:
-            print(f"Match found for '{artist} - {track}'")
-            return result['tracks']['items'][0]['id']
+            track_info = result['tracks']['items'][0]
+            track_name = clean(track_info['name'])
+            track_artist = clean(track_info['artists'][0]['name'])
+
+            # Vérifiez que les deux correspondent
+            if track_name.lower() == track.lower() and track_artist.lower() == artist.lower():
+                print(f"Match found for '{artist} - {track}'")
+                return track_info['id']
+            else:
+                print(f"Partial match found for '{artist} - {track}', but not exact.")
         else:
             print(f"No match found for '{artist} - {track}'")
     except Exception as e:
