@@ -258,6 +258,7 @@ def get_title_artist_id(artist, track):
         time.sleep(1)  # rate limit
 
         if result['tracks']['items']:
+            print(f"Match found for '{artist} - {track}'")
             return result['tracks']['items'][0]['id']
         else:
             print(f"No match found for '{artist} - {track}'")
