@@ -26,12 +26,12 @@ try:
 except Exception as e:
     print(f"❌ Erreur d'authentification : {e}")
 
+#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
 def test_track_id(track_id):
     try:
-        # Récupérer les informations du track à partir de son ID
         track_info = sp.track(track_id)
 
-        # Afficher les informations du track
         print(f"Track Name: {track_info['name']}")
         print(f"Artist: {track_info['artists'][0]['name']}")
         print(f"Album: {track_info['album']['name']}")
@@ -42,6 +42,5 @@ def test_track_id(track_id):
     except Exception as e:
         print(f"Erreur lors de la récupération des informations du track avec l'ID {track_id}: {e}")
 
-# Exemple d'utilisation
-track_id_to_test = "2LQTHb4rEtKpxQgeqdesmc"  # Remplacez par l'ID que vous souhaitez tester
-test_track_id(track_id_to_test)
+
+test_track_id("2LQTHb4rEtKpxQgeqdesmc")
