@@ -25,11 +25,9 @@ sns.heatmap(spotify_num.corr(), annot=True, fmt=".2f", cmap='coolwarm')
 plt.title("Correlation Heatmap of Spotify Song Attributes")
 plt.show()
 
-#%% sélection paramêtres pour ml
-
-spotify_numeric = spotify_num[["Danceability", "Energy", "Loudness", "Instrumentalness",	"Valence",	"Tempo"]].dropna()
-
 #%% preprocessing
+
+spotify_numeric = spotify_num[["Danceability", "Energy", "Loudness", "Instrumentalness", "Valence", "Tempo"]].dropna()
 
 scaler = RobustScaler()
 spotify_scaled = pd.DataFrame(scaler.fit_transform(spotify_numeric),
@@ -64,7 +62,7 @@ kelbow_visualizer(KMeans(random_state=42),spotify_scaled , k=20)
 
 spotify_clusters = 8
 
-#%% K-Means clustering
+#%% KMeans clustering
 
 kmeans = KMeans(n_clusters=spotify_clusters, n_init='auto', random_state=42)
 kmeans.fit(spotify_scaled)
