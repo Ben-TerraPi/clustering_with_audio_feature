@@ -3,7 +3,7 @@
 Continuité du projet [Discogs-Random-Selecta](https://github.com/Ben-TerraPi/Discogs-Random-Selecta)
 
 
-Avec le projet ci-dessus, j'ai récupéré, grâce à des requêtes API, un fichier regroupant l'intégralité des morceaux de chaque album que je possède et que j'ai répertorié sur [Discogs](https://www.discogs.com/) (l'une des plus grandes bases de données musicales en ligne).
+Avec le projet ci-dessus, j'ai récupéré, grâce à des requêtes **API**, un fichier regroupant l'intégralité des morceaux de chaque album que je possède et que j'ai répertorié sur [Discogs](https://www.discogs.com/) (l'une des plus grandes bases de données musicales en ligne).
 
 Le tableau :
 | album_id  | artist | album | track_id | title | 
@@ -11,13 +11,15 @@ Le tableau :
 
 Le fichier : [my_tracks.csv](https://github.com/Ben-TerraPi/Discogs-Random-Selecta/blob/main/my_tracks.csv) avec **5347** tracks.
 
-Maintenant, le but est de regrouper l'ensemble de ces morceaux en utilisant leurs caractéristiques audio. Pour cela, je vais directement récupérer celles déjà existantes et créées par Spotify en utilisant son API avec [Spotipy](https://spotipy.readthedocs.io/en/2.25.1/). Peut-être qu'ultérieurement, j'analyserai moi-même mes fichiers audio dans un autre projet avec les bibliothèques Python [Librosa](https://librosa.org/doc/latest/index.html#) et [Essentia](https://essentia.upf.edu/index.html#).
+Maintenant, le but est de regrouper par cluster l'ensemble de ces morceaux en utilisant leurs caractéristiques audio. Pour cela, je vais directement récupérer celles déjà existantes et créées par Spotify en utilisant son **API** avec [Spotipy](https://spotipy.readthedocs.io/en/2.25.1/). 
+
+Peut-être qu'ultérieurement, j'analyserai moi-même mes fichiers audio dans un autre projet avec les bibliothèques Python [Librosa](https://librosa.org/doc/latest/index.html#) et [Essentia](https://essentia.upf.edu/index.html#).
 
 # Dossier [Spotify](https://github.com/Ben-TerraPi/clustering_with_audio_feature/tree/main/spotify)
 
 ## Fichier [spotify_id.py](https://github.com/Ben-TerraPi/clustering_with_audio_feature/blob/main/spotify/spotify_id.py)
 
-Après l'activation de mes identifiants développeur Spotify pour l'authentification via l'API, il est nécessaire dans un premier temps de requêter la base de données pour recouper mon tableau avec les titres disponibles afin de récupérer les ID de chaque titre en utilisant le nom de l'artiste, le titre et l'album du morceau.
+Après l'activation de mes identifiants développeur Spotify pour l'authentification via l'**API**, je vais requêter la base de données pour recouper mon tableau avec les morceaux disponibles sur Spotify afin de récupérer leur ID. Pour cela je vais utiliser le nom de l'artiste, le titre et l'album du morceau.
 
 À la suite de mes tests, je réalise qu'il faut rechercher des correspondances en plusieurs étapes pour s'assurer de la qualité des données.
 
@@ -185,6 +187,12 @@ Après avoir renommé et selectioné l'ordre des colonnes mon tableau ressemble 
 
 Tableau final importé depuis **BigQuery**
 Pour information la signification des caractéristiques audio récupérés sont toujours visible sur le [site développeur Spotify](https://developer.spotify.com/documentation/web-api/reference/get-audio-features)
+
+## Fichier [ml_clustering.py](https://github.com/Ben-TerraPi/clustering_with_audio_feature/blob/main/ML/ml_clustering.py)
+
+Le travail de regroupement de **4113** sur **547** morceaux de ma collection personnelles en vinyls peut enfin commencé.
+
+
 
 
 
