@@ -6,7 +6,7 @@ Continuité du projet [Discogs-Random-Selecta](https://github.com/Ben-TerraPi/Di
 Avec le projet ci-dessus, j'ai récupéré, grâce à des requêtes API, un fichier regroupant l'intégralité des morceaux de chaque album que je possède et que j'ai répertorié sur [Discogs](https://www.discogs.com/) (l'une des plus grandes bases de données musicales en ligne).
 
 Le tableau :
-| album_id  | artist | album | track_id | title |
+| album_id  | artist | album | track_id | title | 
 |-----------|--------|-------|----------|-------|
 
 Le fichier : [my_tracks.csv](https://github.com/Ben-TerraPi/Discogs-Random-Selecta/blob/main/my_tracks.csv) avec **5347** tracks.
@@ -98,27 +98,93 @@ def create_spotify_playlist(csv_file_path, sp, playlist_name, cluster=None):
 
     df = pd.read_csv(csv_file_path)
 
-    # Filtrer par cluster si spécifié
+    # après ML
     if cluster is not None:
         df = df[df['Cluster'] == cluster]
 
     track_ids = df['spotify_id'].tolist()
 
-    # Créer une playlist
+    # créer playlist
     user_id = sp.me()['id']
     playlist = sp.user_playlist_create(user_id, name = playlist_name, public=True)
     playlist_id = playlist['id']
 
-    # Ajouter des morceaux à la playlist
-    # lots de 100 pour éviter les limitations de l'API
-    for i in tqdm(range(0, len(track_ids), 100), desc="Ajout des morceaux à la playlist"):
+    for i in tqdm(range(0, len(track_ids), 100), desc="morceaux >> playlist"):
         sp.playlist_add_items(playlist_id, track_ids[i:i+100])
 
-    print(f"Playlist créée avec succès : {playlist['external_urls']['spotify']}")
+    print(f"créée avec succès : {playlist['external_urls']['spotify']}")
 ```
 
-Avec `create_spotify_playlist("spotify/my_tracks_spotify_ids.csv", sp, 'Ma nouvelle playlist')` ma [playlist](https://open.spotify.com/playlist/3XjEseEzqCk5wmensDKdfd) est accessible et téléchargeable via Exportify avec les données 
+Avec `create_spotify_playlist("spotify/my_tracks_spotify_ids.csv", sp, 'Ma nouvelle playlist')` ma [playlist](https://open.spotify.com/playlist/3XjEseEzqCk5wmensDKdfd) est accessible et téléchargeable en **.csv** via **Exportify** pour récupérer les caractéristiques audio des morceaux.
 
+# Etape de travail BigQuery
+
+Une fois le fichier récupéré j'utilise un de mes projets sur BigQuery pour les prochaines étapes:
+
+- vérification de clé primaire
+- merge de différent tableau
+- mise forme du tableau final
+
+Pour rappel mon premier tableau ressemble à cela après récupération des ID spotify:
+| album_id  | artist | album | track_id | title |spotify_id |
+|-----------|--------|-------|----------|-------|-----------|
+
+## Primary key
+```
+#TEST PRIMARY KEY
+SELECT
+spotify_id, #track_id
+COUNT(*) AS nb
+FROM `my_data.my_tracks_with_spotify_id`
+GROUP BY
+spotify_id #track_id
+HAVING nb>=2
+ORDER BY nb DESC
+```
+**spotify_id** et **track_id** représente bien des valeurs uniques chacune.
+
+## Left join
+
+Je récupère les infos de **genre** et **style** avec à un autre tableau:
+```
+SELECT m.spotify_id,
+m.album,
+m.artist,
+m.track_id,
+m.title,
+c.genre,
+c.style
+FROM discogs-random-selecta.my_data.my_tracks_with_spotify_id as m
+LEFT JOIN discogs-random-selecta.my_data.collection_clean as c
+ON m.album_id = c.id
+```
+
+| spotify_id | album | artist | track_id | title | genre | style |
+|------------|-------|--------|----------|-------|-------|-------|
+
+Ensuite y ajoute mes données **Exportify** avec une vue intermédiaire avant création de la table final
+
+```
+#CREATION final_v1
+SELECT
+g.*,
+l.* EXCEPT(track_id)
+FROM `my_data.left_join_genre_id`as g
+LEFT JOIN discogs-random-selecta.export_spotify.4113_join as l
+ON g.spotify_id = l.Track_Id
+```
+
+Après avoir renommé et selectioné l'ordre des colonnes mon tableau ressemble à cela:
+
+| Track_id | Artist | Title |Album | Genre | Style | Popularity | Danceability | Energy | Loudness | Speechiness | Acousticness | Instrumentalness | Liveness | Valence | Tempo | Time_Signature | Time | Key | Camelot | Spotify_key| Spotify_mode | spotify_id |
+|----------|--------|-------|------|-------|-------|------------|--------------|--------|----------|-------------|--------------|------------------|----------|---------|-------|----------------|------|-----|---------|------------|--------------|------------|
+
+# Dossier [ML](https://github.com/Ben-TerraPi/clustering_with_audio_feature/tree/main/ML)
+
+## Fichier [tracks_features.csv](https://github.com/Ben-TerraPi/clustering_with_audio_feature/blob/main/ML/tracks_features.csv)
+
+Tableau final importé depuis **BigQuery**
+Pour information la signification des caractéristiques audio récupérés sont toujours visible sur le [site développeur Spotify](https://developer.spotify.com/documentation/web-api/reference/get-audio-features)
 
 
 
