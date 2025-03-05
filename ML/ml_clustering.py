@@ -1,4 +1,4 @@
-#%%
+#%% Import
 import pandas as pd
 import pandas_gbq
 from IPython.display import display
@@ -11,33 +11,32 @@ from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 from yellowbrick.cluster.elbow import kelbow_visualizer
 
-#%%
-tracks_features = pd.read_csv("ML/tracks_features.csv")
+#%% DF
+tracks_features = pd.read_csv(r"C:\Users\benoi\code\Ben-TerraPi\clustering_with_audio_feature\ML\tracks_features.csv")
+
+tracks_features.info()
+
+#%% heatmap pour corrélations
 
 spotify_num = tracks_features.select_dtypes(include=['int64', 'float64'])
 
-#%%
-# heatmap to visualize correlations
 plt.figure(figsize=(12, 10))
 sns.heatmap(spotify_num.corr(), annot=True, fmt=".2f", cmap='coolwarm')
 plt.title("Correlation Heatmap of Spotify Song Attributes")
 plt.show()
 
+#%% sélection paramêtres pour ml
 
-# sélection des paramêtres ml
-spotify_numeric = spotify_num[["Danceability", "Loudness", "Energy", "Acousticness", "Instrumentalness",	"Valence",	"Tempo"]]
+spotify_numeric = spotify_num[["Danceability", "Energy", "Loudness", "Instrumentalness",	"Valence",	"Tempo"]].dropna()
 
-"""## Preprocessing"""
+#%% preprocessing
 
 scaler = RobustScaler()
 spotify_scaled = pd.DataFrame(scaler.fit_transform(spotify_numeric),
                               columns=spotify_numeric.columns)
 spotify_scaled
 
-"""## Modelling with preprocessed data
-
-## Finding the right value for *K*
-"""
+#%% valeur pour *K*
 
 nb_clusters_to_try = np.arange(1, 21, 1)
 nb_clusters_to_try
@@ -49,31 +48,37 @@ for k in nb_clusters_to_try:
     kmeans.fit(spotify_scaled)
     inertias.append(kmeans.inertia_)
 
-#elbow 
+#%% elbow graph
+
 fig = px.line(y=inertias,
               x=range(1, len(inertias) + 1),
               labels={'x': 'nb centroids', 'y':'Inertia'},
               title="Elbow method")
 fig.show()
 
+#%% yellow brick
+
 kelbow_visualizer(KMeans(random_state=42),spotify_scaled , k=20)
 
-"""## Creating a model with the ideal number of clusters"""
+#%% nb clusters
 
-# Nombre de clusters
 spotify_clusters = 8
 
-# Appliquer K-Means clustering
+#%% K-Means clustering
+
 kmeans = KMeans(n_clusters=spotify_clusters, n_init='auto', random_state=42)
 kmeans.fit(spotify_scaled)
 
-# Obtenir les labels des clusters
+#%% labels des clusters
+
 labelling = kmeans.labels_
 
-# score silhouette
+#%% score 
+
 silhouette_score(spotify_scaled, labelling)
 
-#3d plot
+#%% 3d plot
+
 fig_scaled = px.scatter_3d(spotify_scaled,
                            x='Danceability',
                            y='Energy',
@@ -83,49 +88,52 @@ fig_scaled = px.scatter_3d(spotify_scaled,
                            height=500)
 fig_scaled.show()
 
-# Obtenir les centroïdes des clusters
+#%% centroïdes des clusters
+
 cluster_centers = kmeans.cluster_centers_
 
-# Créer un DataFrame pour les centroïdes
+#%% DF pour les centroïdes
+
 centroids_df = pd.DataFrame(cluster_centers, columns=spotify_scaled.columns)
 
-# Tracer le heatmap des centroïdes
+#%% heatmap centroïdes
+
 plt.figure(figsize=(12, 8))
 sns.heatmap(centroids_df, annot=True, cmap='coolwarm', linewidths=0.5)
 plt.title('Heatmap des centroïdes des clusters (K-Means)')
 plt.show()
 
-"""### Noms pour les clusters
+""" # Analyse de la heatmap
 
-Cluster 0 : "Morceaux Calmes" - Faible danceabilité, énergie, et loudness.
-Cluster 1 : "Morceaux Doux et Acoustiques" - Forte acoustique et instrumentalité, énergie modérée.
+Cluster 0 : "Morceaux Calmes et Peu Énergiques" - Faible danceabilité, énergie, et loudness.
+Cluster 1 : "Morceaux Instrumentaux et Acoustiques" - Forte instrumentalité et acoustique modérée.
 Cluster 2 : "Morceaux Équilibrés" - Caractéristiques modérées, légèrement positives en danceabilité et énergie.
-Cluster 3 : "Morceaux Positifs" - Valence élevée, danceabilité et énergie modérées.
-Cluster 4 : "Morceaux Instrumentaux" - Instrumentalité élevée, acoustique modérée.
-Cluster 5 : "Morceaux Instrumentaux et Acoustiques" - Forte instrumentalité et acoustique modérée.
-Cluster 6 : "Morceaux Acoustiques" - Forte acoustique, instrumentalité élevée.
-Cluster 7 : "Morceaux Instrumentaux et Énergiques" - Forte instrumentalité, acoustique modérée, énergie et loudness modérées.
+Cluster 3 : "Morceaux Positifs et Énergiques" - Valence élevée, danceabilité et énergie modérées.
+Cluster 4 : "Morceaux Rapides et Instrumentaux" - Tempo élevé, instrumentalité modérée.
+Cluster 5 : "Morceaux Doux et Calmes" - Faible énergie, loudness, et valence.
+Cluster 6 : "Morceaux Modérés" - Caractéristiques modérées, légèrement positives en danceabilité et énergie.
+Cluster 7 : "Morceaux Rapides et Énergiques" - Tempo élevé, énergie modérée.
 
 """
 
-# nombre de tracks par cluster
+#%% nb tracks par cluster
+
 np.unique(labelling,return_counts=True)
 
+#%% nouveau csv
 
-# rajout de la colonne cluster
 tracks_features['Cluster'] = pd.Series(labelling)
 
+tracks_features.to_csv(r"C:\Users\benoi\code\Ben-TerraPi\clustering_with_audio_feature\ML\spotify_ML_clusters.csv", index= False)
 
-tracks_features.to_csv("ML/spotify_ML_clusters.csv", index= False)
-
-"""### export to BigQuery"""
+#%% export BigQuery
 
 project_id = "discogs-random-selecta"
 table_id = "discogs-random-selecta.ML.spotify_ML_clusters"
 
 pandas_gbq.to_gbq(tracks_features, table_id , project_id)
 
-"""## Generating Spotify playlists based on our clusters!"""
+#%% 8 playlists basé sur clusters
 
 daily_mixes = {}
 
@@ -133,10 +141,12 @@ for num_cluster in np.unique(labelling):
 
   daily_mixes[num_cluster] = tracks_features[tracks_features['Cluster'] == num_cluster]
 
-"""Run the cell below to print out our 8 playlists!!!"""
-
 for key,value in daily_mixes.items():
   print("-" * 50)
-  print(f"Here are some songs for playlist {key}")
+  print(f"playlist {key}")
   print("-" * 50)
-  display(value.sample(15)[['Title', 'Artist', "Album", "Genre", "Style"]])
+  display(value.sample(5)[['Title', 'Artist', "Album", "Genre", "Style"]])
+
+
+
+
