@@ -56,7 +56,7 @@ def get_track_id(artist, track, album):
     return get_title_artist_id(artist, track)
 ```
 
-Cette dernière est appelé lors de la création du nouveau tableau [my_tracks_spotify_id.csv](https://github.com/Ben-TerraPi/clustering_with_audio_feature/blob/main/spotify/my_tracks_spotify_id.csv):
+Cette dernière est appelée lors de la création du nouveau tableau [my_tracks_spotify_id.csv](https://github.com/Ben-TerraPi/clustering_with_audio_feature/blob/main/spotify/my_tracks_spotify_id.csv):
 
 ```
 def add_id_to_csv(input_file_path, output_file_path, limit=None):
@@ -74,10 +74,10 @@ def add_id_to_csv(input_file_path, output_file_path, limit=None):
 ```
 
 Sur les 5347 morceaux:
-- **4113** spotify_id unique récupéré: [my_tracks_with_spotify_id.csv](https://github.com/Ben-TerraPi/clustering_with_audio_feature/blob/main/spotify/my_tracks_with_spotify_id.csv)
+- **4113** spotify_id uniques récupérés: [my_tracks_with_spotify_id.csv](https://github.com/Ben-TerraPi/clustering_with_audio_feature/blob/main/spotify/my_tracks_with_spotify_id.csv)
 - 149 doublons
-- 1085 morceaux non identifié: [my_tracks_without_spotify_id.csv](https://github.com/Ben-TerraPi/clustering_with_audio_feature/blob/main/spotify/my_tracks_without_spotify_id.csv)
-(ils représentent pour un pourcentage élevé les titres venant de compilations où le nom de l'artiste est appelé "Various")
+- 1085 morceaux non identifiés: [my_tracks_without_spotify_id.csv](https://github.com/Ben-TerraPi/clustering_with_audio_feature/blob/main/spotify/my_tracks_without_spotify_id.csv)
+(ils représentent, pour un pourcentage élevé, les titres venant de compilations où le nom de l'artiste est appelé "Various")
 
 
 ## Fichier [audio_features.py](https://github.com/Ben-TerraPi/clustering_with_audio_feature/blob/main/spotify/audio_features.py)
@@ -85,7 +85,7 @@ Sur les 5347 morceaux:
 Je suis resté bloqué sur cette étape avant de comprendre que Spotify avait fait le choix de bloquer l'attribut **.audio_features** (erreur 403) depuis le mois de novembre 2024, ne permettant plus de récupérer les données correspondantes. 
 N.B. : Je garde mon code dans le cas d'un retour de la fonctionnalité.
 
-### Alternative pour récupération des features audio avec le site [Exportify](https://exportify.net/)
+### Alternative pour la récupération des features audio avec le site [Exportify](https://exportify.net/)
 
 Malgré la fermeture de l'accès par Spotify à certaines fonctionnalités de l'API, il existe encore des sites qui fournissent les données souhaitées. Pour cela, il est nécessaire de créer une playlist Spotify afin de pouvoir l'exporter vers le site en question.
 
@@ -119,13 +119,13 @@ Avec `create_spotify_playlist("spotify/my_tracks_spotify_ids.csv", sp, 'Ma nouve
 
 # Etape de travail BigQuery
 
-Une fois le fichier récupéré j'utilise un de mes projets sur BigQuery pour les prochaines étapes:
+Une fois le fichier récupéré, j'utilise un de mes projets sur **BigQuery** pour les prochaines étapes :
 
-- vérification de clé primaire
-- merge de différent tableau
-- mise forme du tableau final
+- Vérification de clé primaire
+- Fusion de différents tableaux
+- Mise en forme du tableau final
 
-Pour rappel mon premier tableau ressemble à cela après récupération des ID spotify:
+Pour rappel, mon premier tableau ressemble à cela après récupération des ID spotify:
 | album_id  | artist | album | track_id | title |spotify_id |
 |-----------|--------|-------|----------|-------|-----------|
 
