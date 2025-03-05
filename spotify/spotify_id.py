@@ -336,7 +336,12 @@ def add_id_to_csv(input_file_path, output_file_path, limit=None):
 
 add_id_to_csv('my_tracks.csv', 'spotify/my_tracks_spotify_id.csv')
 
-# my_tracks_spotify_id = pd.read_csv("spotify/my_tracks_spotify_id.csv")
+my_tracks_spotify_id = pd.read_csv("spotify/my_tracks_spotify_id.csv")
 
-# #ID unique
-# my_tracks_with_spotify_id  = my_tracks_spotify_id[my_tracks_spotify_id['spotify_id'].notnull()].drop_duplicates(subset='spotify_id').to_csv("spotify/my_tracks_with_spotify_id.csv")
+#ID unique
+my_tracks_with_spotify_id  = my_tracks_spotify_id[my_tracks_spotify_id['spotify_id'].notnull()]
+my_tracks_with_spotify_id.drop_duplicates(subset='spotify_id').to_csv("spotify/my_tracks_with_spotify_id.csv")
+
+#No ID
+my_tracks_without_spotify_id = my_tracks_spotify_id[my_tracks_spotify_id['spotify_id'].isnull()]
+my_tracks_without_spotify_id.to_csv("spotify/my_tracks_without_spotify_id.csv")
