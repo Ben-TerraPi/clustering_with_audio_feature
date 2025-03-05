@@ -333,7 +333,55 @@ plt.show()
       Ce graphique va permettre d'analyser les correspondences pour nommer les clusters.
     </td>
     <td width="50%" valign="top">
-      <img src="heatmap_centroïde_cluster.png" alt="Capture d'écran" width="100%"/>
+      <img src="ML/images/heatmap_centroïde_cluster.png" alt="Capture d'écran" width="100%"/>
     </td>
   </tr>
 </table>
+
+
+### Analyse de la heatmap avec Mistral AI
+
+- Cluster 0 : "Morceaux Calmes et Peu Énergiques" - Faible danceabilité, énergie, et loudness.
+- Cluster 1 : "Morceaux Instrumentaux et Acoustiques" - Forte instrumentalité et acoustique modérée.
+- Cluster 2 : "Morceaux Équilibrés" - Caractéristiques modérées, légèrement positives en danceabilité et énergie.
+- Cluster 3 : "Morceaux Positifs et Énergiques" - Valence élevée, danceabilité et énergie modérées.
+- Cluster 4 : "Morceaux Rapides et Instrumentaux" - Tempo élevé, instrumentalité modérée.
+- Cluster 5 : "Morceaux Doux et Calmes" - Faible énergie, loudness, et valence.
+- Cluster 6 : "Morceaux Modérés" - Caractéristiques modérées, légèrement positives en danceabilité et énergie.
+- Cluster 7 : "Morceaux Rapides et Énergiques" - Tempo élevé, énergie modérée.
+
+### Résultats et création des playlists
+
+Nombre de morceaux par cluster:
+
+`np.unique(labelling,return_counts=True)` = (array([0, 1, 2, 3, 4, 5, 6, 7], dtype=int32),
+ array([238, 794, 644, 810, 508, 291, 493, 330]))
+
+Nouveau fichier .csv:
+```
+tracks_features['Cluster'] = pd.Series(labelling)
+
+tracks_features.to_csv(r"C:\Users\benoi\code\Ben-TerraPi\clustering_with_audio_feature\ML\spotify_ML_clusters.csv", index= False)
+```
+Export vers **BigQuery**:
+```
+project_id = "discogs-random-selecta"
+table_id = "discogs-random-selecta.ML.spotify_ML_clusters"
+
+pandas_gbq.to_gbq(tracks_features, table_id , project_id)
+```
+
+8 playlists basé sur les clusters
+```
+daily_mixes = {}
+
+for num_cluster in np.unique(labelling):
+
+  daily_mixes[num_cluster] = tracks_features[tracks_features['Cluster'] == num_cluster]
+
+for key,value in daily_mixes.items():
+  print("-" * 50)
+  print(f"playlist {key}")
+  print("-" * 50)
+  display(value.sample(5)[['Title', 'Artist', "Album", "Genre", "Style"]])
+```
