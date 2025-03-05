@@ -1,3 +1,4 @@
+#%%
 import pandas as pd
 import pandas_gbq
 from IPython.display import display
@@ -10,12 +11,12 @@ from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 from yellowbrick.cluster.elbow import kelbow_visualizer
 
-
+#%%
 tracks_features = pd.read_csv("ML/tracks_features.csv")
 
 spotify_num = tracks_features.select_dtypes(include=['int64', 'float64'])
 
-
+#%%
 # heatmap to visualize correlations
 plt.figure(figsize=(12, 10))
 sns.heatmap(spotify_num.corr(), annot=True, fmt=".2f", cmap='coolwarm')
