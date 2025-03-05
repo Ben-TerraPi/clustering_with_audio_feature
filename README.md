@@ -185,14 +185,155 @@ Après avoir renommé et selectioné l'ordre des colonnes mon tableau ressemble 
 
 ## Fichier [tracks_features.csv](https://github.com/Ben-TerraPi/clustering_with_audio_feature/blob/main/ML/tracks_features.csv)
 
-Tableau final importé depuis **BigQuery**
-Pour information la signification des caractéristiques audio récupérés sont toujours visible sur le [site développeur Spotify](https://developer.spotify.com/documentation/web-api/reference/get-audio-features)
+Tableau final importé depuis **BigQuery**.
+
+Pour information, la signification des caractéristiques audio récupérés sont toujours visible sur le [site développeur Spotify](https://developer.spotify.com/documentation/web-api/reference/get-audio-features)
 
 ## Fichier [ml_clustering.py](https://github.com/Ben-TerraPi/clustering_with_audio_feature/blob/main/ML/ml_clustering.py)
 
-Le travail de regroupement de **4113** sur **547** morceaux de ma collection personnelles en vinyls peut enfin commencé.
+Le travail de regroupement par cluster de **4113** sur **547** morceaux de ma collection personnelles en vinyls peut enfin commencé. 
+
+Pour cela j'utilise la librairie de Machine Learning [scikit-learn](https://scikit-learn.org/stable/index.html) avec KMeans.
+
+### Analyse des données
+
+`tracks_features = pd.read_csv(r"C:\Users\benoi\code\Ben-TerraPi\clustering_with_audio_feature\ML\tracks_features.csv")`
+
+<table>
+  <tr>
+    <td width="50%" valign="top">
+      <pre><code>
+spotify_num = tracks_features.select_dtypes(include=['int64', 'float64'])
+
+plt.figure(figsize=(12, 10))
+sns.heatmap(spotify_num.corr(), annot=True, fmt=".2f", cmap='coolwarm')
+plt.title("Correlation Heatmap of Spotify Song Attributes")
+plt.show()
+      </code></pre>
+      Par rapport au graphique de corrélation et mes besoins, les paramètres sélectionnés sont :
+      <ul>
+        <li>Danceability</li>
+        <li>Energy</li>
+        <li>Loudness</li>
+        <li>Instrumentalness</li>
+        <li>Valence</li>
+        <li>Tempo</li>
+      </ul>
+    </td>
+    <td width="50%" valign="top">
+      <img src="ML/images/Corr_heatmap.png" alt="Capture d'écran" width="100%"/>
+    </td>
+  </tr>
+</table>
+
+### Preprocessing avec Robustscaler
+
+```
+spotify_numeric = spotify_num[["Danceability", "Energy", "Loudness", "Instrumentalness", "Valence",	"Tempo"]].dropna()
+
+scaler = RobustScaler()
+spotify_scaled = pd.DataFrame(scaler.fit_transform(spotify_numeric),
+                              columns=spotify_numeric.columns)
+```
+
+### Recherche de valeur de k pour KMeans
+
+```
+nb_clusters_to_try = np.arange(1, 21, 1)
+nb_clusters_to_try
+
+inertias = []
+
+for k in nb_clusters_to_try:
+    kmeans = KMeans(n_clusters=k, n_init='auto', random_state=42)
+    kmeans.fit(spotify_scaled)
+    inertias.append(kmeans.inertia_)
+```
+
+<table>
+  <tr>
+    <td width="50%" valign="top">
+      <pre><code>
+fig = px.line(y=inertias,
+              x=range(1, len(inertias) + 1),
+              labels={'x': 'nb centroids', 'y':'Inertia'},
+              title="Elbow method")
+fig.show()
+      </code></pre>
+      Selon la graphique d'Elbow Method, la valeur de k est estimé à 8
+        <pre><code>
+      spotify_clusters = 8
+        </code></pre>
+    </td>
+    <td width="50%" valign="top">
+      <img src="ML/images/elbow.png" alt="Capture d'écran" width="100%"/>
+    </td>
+  </tr>
+</table>
 
 
+### KMeans clustering
+```
+kmeans = KMeans(n_clusters=spotify_clusters, n_init='auto', random_state=42)
+kmeans.fit(spotify_scaled)
 
+# labels des clusters
 
+labelling = kmeans.labels_
 
+# score 
+
+silhouette_score(spotify_scaled, labelling)
+```
+
+### 3D plot
+
+<table>
+  <tr>
+    <td width="50%" valign="top">
+      <pre><code>
+fig_scaled = px.scatter_3d(spotify_scaled,
+       x='Danceability',
+       y='Energy',
+       z='Valence',
+       color=labelling,
+       width=500,
+       height=500)
+          
+fig_scaled.show()
+      </code></pre>
+      Avec 3 paramètres sélectionnés sur 6, nous pouvons voir les clusters formés.
+    </td>
+    <td width="50%" valign="top">
+      <img src="ML/images/3dplot.png" alt="Capture d'écran" width="100%"/>
+    </td>
+  </tr>
+</table>
+
+### Heatmap des centroïdes
+
+<table>
+  <tr>
+    <td width="50%" valign="top">
+      <pre><code>
+cluster_centers = kmeans.cluster_centers_
+
+#%% DF pour les centroïdes
+
+centroids_df = pd.DataFrame(cluster_centers, columns=spotify_scaled.columns)
+
+#%% heatmap centroïdes
+
+plt.figure(figsize=(12, 8))
+sns.heatmap(centroids_df, annot=True, cmap='coolwarm', linewidths=0.5)
+plt.title('Heatmap des centroïdes des clusters (K-Means)')
+
+plt.show()
+      </code></pre>
+      Ce graphique va permettre d'analyser les correspondences pour nommer les clusters.
+    </td>
+    <td width="50%" valign="top">
+      <img src="heatmap_centroïde_cluster.png" alt="Capture d'écran" width="100%"/>
+    </td>
+  </tr>
+</table>
