@@ -85,11 +85,11 @@ Sur les 5347 morceaux:
 Je suis resté bloqué sur cette étape avant de comprendre que Spotify avait fait le choix de bloquer l'attribut .audio_features depuis le mois de novembre 2024, ne permettant plus de récupérer les données correspondantes. 
 N.B. : Je garde mon code dans le cas d'un retour de la fonctionnalité.
 
-## Alternative pour récupération des features audio avec le site [Exportify](https://exportify.net/)
+### Alternative pour récupération des features audio avec le site [Exportify](https://exportify.net/)
 
 Malgré la fermeture de l'accès par Spotify à certaines fonctionnalités de l'API, il existe encore des sites qui fournissent les données souhaitées. Pour cela, il est nécessaire de créer une playlist Spotify afin de pouvoir l'exporter vers le site en question.
 
-### Fichier [export_playlist.py](https://github.com/Ben-TerraPi/clustering_with_audio_feature/blob/main/spotify/export_playlist.py)
+## Fichier [export_playlist.py](https://github.com/Ben-TerraPi/clustering_with_audio_feature/blob/main/spotify/export_playlist.py)
 
 Fonction pour l'exportation de mes morceaux vers spotify grâce à leur ID:
 
