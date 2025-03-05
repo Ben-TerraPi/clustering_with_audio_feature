@@ -54,10 +54,11 @@ create_spotify_playlist("spotify/my_tracks_with_spotify_id.csv", sp, 'Ma nouvell
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> export playlist ML_Cluster
 
 # create_spotify_playlist("ML/spotify_ML_clusters.csv", sp, "Calmes", cluster = 0)
-# create_spotify_playlist("ML/spotify_ML_clusters.csv", sp, "Doux et Acoustiques", cluster = 1)
+# create_spotify_playlist("ML/spotify_ML_clusters.csv", sp, "Instrumentaux", cluster = 1)
 # create_spotify_playlist("ML/spotify_ML_clusters.csv", sp, "Équilibrés", cluster = 2)
-# create_spotify_playlist("ML/spotify_ML_clusters.csv", sp, "Positifs", cluster = 3)
-# create_spotify_playlist("ML/spotify_ML_clusters.csv", sp, "Instrumentaux", cluster = 4)
-# create_spotify_playlist("ML/spotify_ML_clusters.csv", sp, "Instrumentaux et Acoustiques", cluster = 5)
-# create_spotify_playlist("ML/spotify_ML_clusters.csv", sp, "Acoustiques", cluster = 6)
-# create_spotify_playlist("ML/spotify_ML_clusters.csv", sp, "Instrumentaux et Énergiques", cluster = 7)
+# create_spotify_playlist("ML/spotify_ML_clusters.csv", sp, "Positifs et Énergiques", cluster = 3)
+# create_spotify_playlist("ML/spotify_ML_clusters.csv", sp, "Rapides et Instrumentaux", cluster = 4)
+# create_spotify_playlist("ML/spotify_ML_clusters.csv", sp, "Doux et Calmes", cluster = 5)
+# create_spotify_playlist("ML/spotify_ML_clusters.csv", sp, "Modérés", cluster = 6)
+# create_spotify_playlist("ML/spotify_ML_clusters.csv", sp, "Rapides et Énergiques", cluster = 7)
+
