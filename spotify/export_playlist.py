@@ -3,7 +3,6 @@ import os
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 import pandas as pd
-import csv
 from tqdm import tqdm
 
 load_dotenv()
@@ -19,31 +18,34 @@ sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id = SPOTIPY_CLIENT_ID,
                                                redirect_uri = SPOTIPY_REDIRECT_URI,
                                                scope='playlist-modify-public'))
 
+# Test authentification
+try:
+    token = sp.auth_manager.get_access_token(as_dict=False)
+    print(f"✅ Authentification réussie !")
+except Exception as e:
+    print(f"❌ Erreur d'authentification : {e}")
 
-#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> FONCTION POUR EXPORT PLAYLIST
+#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 def create_spotify_playlist(csv_file_path, sp, playlist_name, cluster=None):
 
     df = pd.read_csv(csv_file_path)
 
-    # Filtrer par cluster si spécifié
+    # après ML
     if cluster is not None:
         df = df[df['Cluster'] == cluster]
 
     track_ids = df['spotify_id'].tolist()
 
-    # Créer une playlist
+    # créer playlist
     user_id = sp.me()['id']
     playlist = sp.user_playlist_create(user_id, name = playlist_name, public=True)
     playlist_id = playlist['id']
 
-    # Ajouter des morceaux à la playlist
-    # lots de 100 pour éviter les limitations de l'API
-    for i in tqdm(range(0, len(track_ids), 100), desc="Ajout des morceaux à la playlist"):
+    for i in tqdm(range(0, len(track_ids), 100), desc="morceaux >> playlist"):
         sp.playlist_add_items(playlist_id, track_ids[i:i+100])
 
-    print(f"Playlist créée avec succès : {playlist['external_urls']['spotify']}")
-
+    print(f"créée avec succès : {playlist['external_urls']['spotify']}")
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> FICHIER avec spotify ID
 
