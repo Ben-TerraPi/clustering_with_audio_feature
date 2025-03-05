@@ -2,10 +2,10 @@ import pandas as pd
 import pandas_gbq
 
 
-my_tracks_spotify_id = pd.read_csv("spotify/my_tracks_spotify_ids.csv")
+my_tracks_spotify_id = pd.read_csv("spotify/my_tracks_spotify_id.csv")
 
 my_tracks_with_spotify_id  = pd.read_csv("spotify/my_tracks_with_spotify_id.csv")
-
+my_tracks_without_spotify_id = pd.read_csv("spotify/my_tracks_without_spotify_id.csv")
 # export GBQ
 
 project_id = "discogs-random-selecta"
