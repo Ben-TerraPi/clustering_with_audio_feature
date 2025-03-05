@@ -1,6 +1,4 @@
-### !...Read me en cours de documentation...!
-
-Continuité du projet [Discogs-Random-Selecta](https://github.com/Ben-TerraPi/Discogs-Random-Selecta)
+**Continuité du projet [Discogs-Random-Selecta](https://github.com/Ben-TerraPi/Discogs-Random-Selecta)**
 
 
 Avec le projet ci-dessus, j'ai récupéré, grâce à des requêtes **API**, un fichier regroupant l'intégralité des morceaux de chaque album que je possède et que j'ai répertorié sur [Discogs](https://www.discogs.com/) (l'une des plus grandes bases de données musicales en ligne).
@@ -371,7 +369,7 @@ table_id = "discogs-random-selecta.ML.spotify_ML_clusters"
 pandas_gbq.to_gbq(tracks_features, table_id , project_id)
 ```
 
-8 playlists basé sur les clusters
+Test des 8 clusters avec 5 morceaux par playlists
 ```
 daily_mixes = {}
 
@@ -385,3 +383,87 @@ for key,value in daily_mixes.items():
   print("-" * 50)
   display(value.sample(5)[['Title', 'Artist', "Album", "Genre", "Style"]])
 ```
+
+<table>
+  <tr>
+    <td>
+      <figure>
+        <img src="ML/images/ex_playlists/0.png" alt="Image 1" width="100%"/>
+        <figcaption>"Morceaux Calmes et Peu Énergiques"</figcaption>
+      </figure>
+    </td>
+    <td>
+      <figure>
+        <img src="ML/images/ex_playlists/1.png" alt="Image 2" width="100%"/>
+        <figcaption>"Morceaux Instrumentaux et Acoustiques"</figcaption>
+      </figure>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <figure>
+        <img src="ML/images/ex_playlists/2.png" alt="Image 3" width="100%"/>
+        <figcaption>"Morceaux Équilibrés"</figcaption>
+      </figure>
+    </td>
+    <td>
+      <figure>
+        <img src="ML/images/ex_playlists/3.png" alt="Image 4" width="100%"/>
+        <figcaption>"Morceaux Positifs et Énergiques"</figcaption>
+      </figure>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <figure>
+        <img src="ML/images/ex_playlists/4.png" alt="Image 5" width="100%"/>
+        <figcaption>"Morceaux Rapides et Instrumentaux"</figcaption>
+      </figure>
+    </td>
+    <td>
+      <figure>
+        <img src="ML/images/ex_playlists/5.png" alt="Image 6" width="100%"/>
+        <figcaption>"Morceaux Doux et Calmes"</figcaption>
+      </figure>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <figure>
+        <img src="ML/images/ex_playlists/6.png" alt="Image 7" width="100%"/>
+        <figcaption>"Morceaux Modérés"</figcaption>
+      </figure>
+    </td>
+    <td>
+      <figure>
+        <img src="ML/images/ex_playlists/7.png" alt="Image 8" width="100%"/>
+        <figcaption>"Morceaux Rapides et Énergiques"</figcaption>
+      </figure>
+    </td>
+  </tr>
+</table>
+
+# Transfert vers Spotify
+
+Fichier [export_playlist.py](https://github.com/Ben-TerraPi/clustering_with_audio_feature/blob/main/spotify/export_playlist.py)
+
+Quitte à avoir déjà utilisé ce code et créé de nouvelles playlists autant en profité en les uploadant vers Spotify!
+
+```
+create_spotify_playlist("ML/spotify_ML_clusters.csv", sp, "Calmes", cluster = 0)
+create_spotify_playlist("ML/spotify_ML_clusters.csv", sp, "Instrumentaux", cluster = 1)
+create_spotify_playlist("ML/spotify_ML_clusters.csv", sp, "Équilibrés", cluster = 2)
+create_spotify_playlist("ML/spotify_ML_clusters.csv", sp, "Positifs et Énergiques", cluster = 3)
+create_spotify_playlist("ML/spotify_ML_clusters.csv", sp, "Rapides et Instrumentaux", cluster = 4)
+create_spotify_playlist("ML/spotify_ML_clusters.csv", sp, "Doux et Calmes", cluster = 5)
+create_spotify_playlist("ML/spotify_ML_clusters.csv", sp, "Modérés", cluster = 6)
+create_spotify_playlist("ML/spotify_ML_clusters.csv", sp, "Rapides et Énergiques", cluster = 7)
+```
+
+Ces playlists sont maintenant retrouvables [ici](https://open.spotify.com/user/31ktx7bt2iijuup5jfuqbzbibdqa/playlists).
+
+
+# Conclusion
+
+! ... A venir après écoute et vérifications de la cohérance des résultats... !
+
