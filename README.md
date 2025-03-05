@@ -145,7 +145,7 @@ ORDER BY nb DESC
 
 ## Left join
 
-Je récupère les infos de **genre** et **style** avec à un autre tableau:
+Je récupère les infos de **genre** et **style** avec un autre tableau:
 ```
 SELECT m.spotify_id,
 m.album,
@@ -174,7 +174,7 @@ LEFT JOIN discogs-random-selecta.export_spotify.4113_join as l
 ON g.spotify_id = l.Track_Id
 ```
 
-Après avoir renommé et selectioné l'ordre des colonnes mon tableau ressemble à cela:
+Après avoir renommé et selectionné l'ordre des colonnes mon tableau ressemble à cela:
 
 | Track_id | Artist | Title |Album | Genre | Style | Popularity | Danceability | Energy | Loudness | Speechiness | Acousticness | Instrumentalness | Liveness | Valence | Tempo | Time_Signature | Time | Key | Camelot | Spotify_key| Spotify_mode | spotify_id |
 |----------|--------|-------|------|-------|-------|------------|--------------|--------|----------|-------------|--------------|------------------|----------|---------|-------|----------------|------|-----|---------|------------|--------------|------------|
@@ -189,7 +189,7 @@ Pour information, la signification des caractéristiques audio récupérés sont
 
 ## Fichier [ml_clustering.py](https://github.com/Ben-TerraPi/clustering_with_audio_feature/blob/main/ML/ml_clustering.py)
 
-Le travail de regroupement par cluster de **4113** sur **547** morceaux de ma collection personnelles en vinyls peut enfin commencé. 
+Le travail de regroupement par cluster de **4113** sur **5347** morceaux de ma collection personnelles en vinyls peut enfin commencé. 
 
 Pour cela j'utilise la librairie de Machine Learning [scikit-learn](https://scikit-learn.org/stable/index.html) avec KMeans.
 
